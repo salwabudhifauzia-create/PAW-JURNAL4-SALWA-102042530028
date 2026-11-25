@@ -10,18 +10,22 @@ class Submission extends Model
 {
     use HasFactory;
 
-    // TODO 2: Tambahkan 'nilai' dan 'catatan_dosen' ke $fillable, serta lengkapi logika status nilai ('Belum Dinilai', 'Lulus' >= 70, 'Perlu Perbaikan')
     protected $fillable = [
         'assignment_id',
         'user_id',
         'jawaban',
         'submitted_at',
+        // TODO 2: Tambahkan 'nilai' dan 'catatan_dosen' ke dalam properti $fillable
+        'nilai',
+        'catatan_dosen',
     ];
 
-    protected $casts = [
-        'nilai' => 'integer',
-        'submitted_at' => 'datetime',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'submitted_at' => 'datetime',
+        ];
+    }
 
     public function assignment(): BelongsTo
     {
@@ -33,9 +37,13 @@ class Submission extends Model
         return $this->belongsTo(User::class);
     }
 
+    // TODO 2: Lengkapi method accessor getStatusNilaiAttribute()
     public function getStatusNilaiAttribute(): string
     {
-        // TODO 2: Lengkapi logika status nilai ('Belum Dinilai' jika null, 'Lulus' jika >= 70, selain itu 'Perlu Perbaikan')
-        return '';
+        if ($this->nilai === null) {
+            return 'Belum Dinilai';
+        }
+
+        return $this->nilai >= 70 ? 'Lulus' : 'Perlu Perbaikan';
     }
 }
